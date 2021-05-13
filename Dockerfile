@@ -4,6 +4,7 @@ LABEL maintainer="Patrick Windmiller <windmiller@pstat.ucsb.edu>"
 
 USER root
 
+## Required rstan build method to work with docker and kubernetes (Beginning)
 #-- RSTAN
 #-- install rstan reqs
 RUN R -e "install.packages(c('inline','gridExtra','loo'))"
@@ -11,6 +12,10 @@ RUN R -e "install.packages(c('inline','gridExtra','loo'))"
 RUN R -e "dotR <- file.path(Sys.getenv('HOME'), '.R'); if(!file.exists(dotR)){ dir.create(dotR) }; Makevars <- file.path(dotR, 'Makevars'); if (!file.exists(Makevars)){  file.create(Makevars) }; cat('\nCXX14FLAGS=-O3 -fPIC -Wno-unused-variable -Wno-unused-function', 'CXX14 = g++ -std=c++1y -fPIC', file = Makevars, sep = '\n', append = TRUE)"
 RUN R -e "install.packages(c('ggplot2','StanHeaders'))"
 RUN R -e "packageurl <- 'http://cran.r-project.org/src/contrib/Archive/rstan/rstan_2.19.3.tar.gz'; install.packages(packageurl, repos = NULL, type = 'source')"
+#-- Docker Makevars substitute (Allows for clearing of Home directory during persistance storage build)
+RUN sed -i 's/CXX14 = /CXX14 = g++ -std=c++1y -fPIC/I' $R_HOME/etc/Makeconf && \
+    sed -i 's/CXX14FLAGS = /CXX14FLAGS = -O3 -fPIC -Wno-unused-variable -Wno-unused-function/I' $R_HOME/etc/Makeconf
+## Required rstan build (End)
 
 #-- ggplot2 extensions
 RUN R -e "install.packages(c('GGally','ggridges','viridis'))"
@@ -45,7 +50,7 @@ RUN R -e "install.packages(c('rstantools', 'shinystan'))"
 
 RUN R -e "install.packages(c('mvtnorm','dagitty','tidyverse','codetools'))"
 
-RUN R -e "devtools::install_github('rmcelreath/rethinking', upgrade = c('never'))"
+#RUN R -e "devtools::install_github('rmcelreath/rethinking', upgrade = c('never'))"
 
 #-- Cairo
 #-- Cairo Requirements
@@ -55,6 +60,9 @@ RUN apt-get update && apt-get install -y \
     libxt-dev && \
     apt-get clean && rm -rf /var/lib/lists/*
 RUN R -e "install.packages(c('Cairo'))"
+
+# Removes the .R folder for accurate simulation of Kubernetes/Docker/Persistant storage env
+RUN rm -R $HOME/.R
 
 USER $NB_USER
 
