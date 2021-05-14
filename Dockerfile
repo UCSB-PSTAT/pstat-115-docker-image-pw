@@ -50,7 +50,7 @@ RUN R -e "install.packages(c('rstantools', 'shinystan'))"
 
 RUN R -e "install.packages(c('mvtnorm','dagitty','tidyverse','codetools'))"
 
-#RUN R -e "devtools::install_github('rmcelreath/rethinking', upgrade = c('never'))"
+RUN R -e "devtools::install_github('rmcelreath/rethinking', upgrade = c('never'))"
 
 #-- Cairo
 #-- Cairo Requirements
