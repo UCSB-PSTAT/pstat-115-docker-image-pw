@@ -61,6 +61,11 @@ RUN apt-get update && apt-get install -y \
     apt-get clean && rm -rf /var/lib/lists/*
 RUN R -e "install.packages(c('Cairo'))"
 
+
+#-- Latex
+RUN apt-get update && apt-get install -y \
+    texlive-latex-base
+
 # Removes the .R folder for accurate simulation of Kubernetes/Docker/Persistant storage env
 RUN rm -R $HOME/.R
 
