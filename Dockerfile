@@ -65,7 +65,8 @@ RUN R -e "install.packages(c('Cairo'))"
 #-- Latex
 RUN apt-get update && apt-get install -y \
     texlive-latex-base \
-    texlive-fonts-recommended
+    texlive-fonts-recommended \
+    latex-xcolor
 
 # Removes the .R folder for accurate simulation of Kubernetes/Docker/Persistant storage env
 RUN rm -R $HOME/.R
