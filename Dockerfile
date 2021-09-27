@@ -66,7 +66,8 @@ RUN R -e "install.packages(c('Cairo'))"
  RUN apt-get update && apt-get install -y \
     texlive-latex-base \
     texlive-fonts-recommended \
-    texlive-latex-recommended
+    texlive-latex-recommended \
+    texlive-latex-extra
 
 RUN R -e "tinytex::install_tinytex()"
 
