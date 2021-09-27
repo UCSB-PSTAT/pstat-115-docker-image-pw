@@ -67,7 +67,7 @@ RUN R -e "install.packages(c('Cairo'))"
 #    texlive-latex-base \
 #    texlive-fonts-recommended \
 #    texlive-latex-recommended
-RUN R - e "tinytex::install_tinytex()"
+RUN R -e "tinytex::install_tinytex()"
 
 # Removes the .R folder for accurate simulation of Kubernetes/Docker/Persistant storage env
 RUN rm -R $HOME/.R
