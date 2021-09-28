@@ -1,4 +1,5 @@
-FROM ucsb/r-base:v20210120.1
+FROM jupyter/r-notebook:6d42503c684f
+#FROM ucsb/r-base:v20210120.1
 
 LABEL maintainer="Patrick Windmiller <windmiller@pstat.ucsb.edu>"
 
@@ -63,13 +64,13 @@ RUN R -e "install.packages(c('Cairo'))"
 
 
 #-- Latex
- RUN apt-get update && apt-get install -y \
-    texlive-latex-base \
-    texlive-fonts-recommended \
-    texlive-latex-recommended \
-    texlive-latex-extra
+# RUN apt-get update && apt-get install -y \
+#    texlive-latex-base \
+#    texlive-fonts-recommended \
+#    texlive-latex-recommended \
+    #texlive-latex-extra
 
-RUN R -e "tinytex::install_tinytex()"
+#RUN R -e "tinytex::install_tinytex()"
 
 # Removes the .R folder for accurate simulation of Kubernetes/Docker/Persistant storage env
 RUN rm -R $HOME/.R
