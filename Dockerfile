@@ -53,6 +53,11 @@ RUN R -e "install.packages(c('mvtnorm','dagitty','tidyverse','codetools'))"
 
 RUN R -e "devtools::install_github('rmcelreath/rethinking', upgrade = c('never'))"
 
+#-- ottr
+RUN R -e "devtools::install_github('ucbds-infra/ottr@stable')"
+
+
+
 #-- Cairo
 #-- Cairo Requirements
 RUN apt-get update && apt-get install -y \
