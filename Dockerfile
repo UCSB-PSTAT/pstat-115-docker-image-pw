@@ -1,5 +1,8 @@
-FROM jupyter/r-notebook:6d42503c684f
+FROM jupyter/r-notebook:latest
 #FROM ucsb/r-base:v20210120.1
+
+ENV REPOS='https://cran.microsoft.com'
+
 
 LABEL maintainer="Patrick Windmiller <windmiller@pstat.ucsb.edu>"
 
@@ -8,54 +11,55 @@ USER root
 ## Required rstan build method to work with docker and kubernetes (Beginning)
 #-- RSTAN
 #-- install rstan reqs
-RUN R -e "install.packages(c('inline','gridExtra','loo'))"
+RUN echo "local({r <- getOption('repos'); r['CRAN'] <- 'https://cran.microsoft.com';  options(repos = r)})" > $R_HOME/etc/Rprofile.site
+RUN R -e "install.packages(c('inline','gridExtra','loo'),repos='$REPOS')"
 #-- install rstan
 RUN R -e "dotR <- file.path(Sys.getenv('HOME'), '.R'); if(!file.exists(dotR)){ dir.create(dotR) }; Makevars <- file.path(dotR, 'Makevars'); if (!file.exists(Makevars)){  file.create(Makevars) }; cat('\nCXX14FLAGS=-O3 -fPIC -Wno-unused-variable -Wno-unused-function', 'CXX14 = g++ -std=c++1y -fPIC', file = Makevars, sep = '\n', append = TRUE)"
-RUN R -e "install.packages(c('ggplot2','StanHeaders'))"
+RUN R -e "install.packages(c('ggplot2','StanHeaders'),repos='$REPOS')"
 RUN R -e "packageurl <- 'http://cran.r-project.org/src/contrib/Archive/rstan/rstan_2.19.3.tar.gz'; install.packages(packageurl, repos = NULL, type = 'source')"
 #-- Docker Makevars substitute (Allows for clearing of Home directory during persistance storage build)
-RUN sed -i 's/CXX14 = /CXX14 = g++ -std=c++1y -fPIC/I' $R_HOME/etc/Makeconf && \
-    sed -i 's/CXX14FLAGS = /CXX14FLAGS = -O3 -fPIC -Wno-unused-variable -Wno-unused-function/I' $R_HOME/etc/Makeconf
+##RUN sed -i 's/CXX14 = /CXX14 = g++ -std=c++1y -fPIC/I' $R_HOME/etc/Makeconf && \
+##    sed -i 's/CXX14FLAGS = /CXX14FLAGS = -O3 -fPIC -Wno-unused-variable -Wno-unused-function/I' $R_HOME/etc/Makeconf
 ## Required rstan build (End)
 
 #-- ggplot2 extensions
-RUN R -e "install.packages(c('GGally','ggridges','viridis'))"
+RUN R -e "install.packages(c('GGally','ggridges','viridis'),repos='$REPOS')"
 
 #-- Misc utilities
-RUN R -e "install.packages(c('beepr','config','tinytex','rmarkdown','formattable','here','Hmisc'))"
+RUN R -e "install.packages(c('beepr','config','tinytex','rmarkdown','formattable','here','Hmisc'),repos='$REPOS')"
 
-RUN R -e "install.packages(c('kableExtra','logging','microbenchmark','openxlsx'))"
+RUN R -e "install.packages(c('kableExtra','logging','microbenchmark','openxlsx'),repos='$REPOS')"
 
-RUN R -e "install.packages(c('RPushbullet','styler','ggridges','plotmo'))"
+RUN R -e "install.packages(c('RPushbullet','styler','ggridges','plotmo'),repos='$REPOS')"
 
-RUN R -e "install.packages(c('nloptr'))"
+RUN R -e "install.packages(c('nloptr'),repos='$REPOS')"
 
 RUN R --vanilla -e "install.packages('minqa',repos='https://cloud.r-project.org', dependencies=TRUE)"
 
 #-- Caret and some ML packages
 #-- ML framework, metrics and Models
-RUN R -e "install.packages(c('codetools'))"
+RUN R -e "install.packages(c('codetools'),repos='$REPOS')"
 RUN R --vanilla -e "install.packages('caret',repos='https://cloud.r-project.org')"
-RUN R -e "install.packages(c('car','ensembleR','MLmetrics','pROC','ROCR','Rtsne','NbClust'))"
+RUN R -e "install.packages(c('car','ensembleR','MLmetrics','pROC','ROCR','Rtsne','NbClust'),repos='$REPOS')"
 
 RUN apt-get update && apt-get install -y \
     nano && \
     apt-get clean && rm -rf /var/lib/lists/*
 
-RUN R -e "install.packages(c('tree','maptree','arm','e1071','elasticnet','fitdistrplus','gam','gamlss','glmnet','lme4','ltm','randomForest','rpart','ISLR'))"
+RUN R -e "install.packages(c('tree','maptree','arm','e1071','elasticnet','fitdistrplus','gam','gamlss','glmnet','lme4','ltm','randomForest','rpart','ISLR'),repos='$REPOS')"
 
 #-- More Bayes stuff
-RUN R -e "install.packages(c('coda','projpred','MCMCpack','hflights','HDInterval','tidytext','dendextend','LearnBayes'))"
+RUN R -e "install.packages(c('coda','projpred','MCMCpack','hflights','HDInterval','tidytext','dendextend','LearnBayes'),repos='$REPOS')"
 
-RUN R -e "install.packages(c('rstantools', 'shinystan'))"
+RUN R -e "install.packages(c('rstantools', 'shinystan'),repos='$REPOS')"
 
-RUN R -e "install.packages(c('mvtnorm','dagitty','tidyverse','codetools'))"
+RUN R -e "install.packages(c('mvtnorm','dagitty','tidyverse','codetools'),repos='$REPOS')"
 
-RUN R -e "devtools::install_github('rmcelreath/rethinking', upgrade = c('never'))"
+RUN R -e "devtools::install_github('rmcelreath/rethinking', upgrade = c('never'),repos='$REPOS')"
 
 #-- ottr
 RUN R -e "devtools::install_github('ucbds-infra/ottr@stable')"
-
+RUN pip install otter-grader
 
 
 #-- Cairo
@@ -65,7 +69,7 @@ RUN apt-get update && apt-get install -y \
     libcairo2-dev \
     libxt-dev && \
     apt-get clean && rm -rf /var/lib/lists/*
-RUN R -e "install.packages(c('Cairo'))"
+RUN R -e "install.packages(c('Cairo'),repos='$REPOS')"
 
 
 #-- Latex
