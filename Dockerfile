@@ -59,7 +59,7 @@ RUN R -e "devtools::install_github('rmcelreath/rethinking', upgrade = c('never')
 
 #-- ottr
 RUN R -e "devtools::install_github('ucbds-infra/ottr@stable')"
-RUN /bin/sh -c pip install otter-grader
+RUN pip install otter-grader
 
 
 #-- Cairo
