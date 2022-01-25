@@ -8,6 +8,8 @@ LABEL maintainer="Patrick Windmiller <windmiller@pstat.ucsb.edu>"
 
 USER root
 
+RUN apt update -y && apt install -yq build-essential python-dev autotools-dev libicu-dev libbz2-dev libboost-all-dev libfreetype6-dev libpixman-1-dev libcairo2-dev libxt-dev nano && apt-get clean
+
 ## Required rstan build method to work with docker and kubernetes (Beginning)
 #-- RSTAN
 #-- install rstan reqs
@@ -15,8 +17,8 @@ RUN echo "local({r <- getOption('repos'); r['CRAN'] <- 'https://cran.microsoft.c
 RUN R -e "install.packages(c('inline','gridExtra','loo'),repos='$REPOS')"
 #-- install rstan
 RUN R -e "dotR <- file.path(Sys.getenv('HOME'), '.R'); if(!file.exists(dotR)){ dir.create(dotR) }; Makevars <- file.path(dotR, 'Makevars'); if (!file.exists(Makevars)){  file.create(Makevars) }; cat('\nCXX14FLAGS=-O3 -fPIC -Wno-unused-variable -Wno-unused-function', 'CXX14 = g++ -std=c++1y -fPIC', file = Makevars, sep = '\n', append = TRUE)"
-RUN R -e "install.packages(c('ggplot2','StanHeaders'),repos='$REPOS')"
-RUN R -e "packageurl <- 'http://cran.r-project.org/src/contrib/Archive/rstan/rstan_2.19.3.tar.gz'; install.packages(packageurl, repos = NULL, type = 'source')"
+RUN R -e "install.packages(c('ggplot2','StanHeaders','V8','BH'),repos='$REPOS')"
+RUN R -e "packageurl <- 'http://cran.r-project.org/src/contrib/Archive/rstan/rstan_2.21.2.tar.gz'; install.packages(packageurl, repos = NULL, type = 'source', dependencies = TRUE)"
 #-- Docker Makevars substitute (Allows for clearing of Home directory during persistance storage build)
 ##RUN sed -i 's/CXX14 = /CXX14 = g++ -std=c++1y -fPIC/I' $R_HOME/etc/Makeconf && \
 ##    sed -i 's/CXX14FLAGS = /CXX14FLAGS = -O3 -fPIC -Wno-unused-variable -Wno-unused-function/I' $R_HOME/etc/Makeconf
@@ -42,10 +44,6 @@ RUN R -e "install.packages(c('codetools'),repos='$REPOS')"
 RUN R --vanilla -e "install.packages('caret',repos='https://cloud.r-project.org')"
 RUN R -e "install.packages(c('car','ensembleR','MLmetrics','pROC','ROCR','Rtsne','NbClust'),repos='$REPOS')"
 
-RUN apt-get update && apt-get install -y \
-    nano && \
-    apt-get clean && rm -rf /var/lib/lists/*
-
 RUN R -e "install.packages(c('tree','maptree','arm','e1071','elasticnet','fitdistrplus','gam','gamlss','glmnet','lme4','ltm','randomForest','rpart','ISLR'),repos='$REPOS')"
 
 #-- More Bayes stuff
@@ -59,16 +57,10 @@ RUN R -e "devtools::install_github('rmcelreath/rethinking', upgrade = c('never')
 
 #-- ottr
 RUN R -e "devtools::install_github('ucbds-infra/ottr@stable')"
-RUN /bin/sh -c pip install otter-grader
+RUN pip install otter-grader
 
 
 #-- Cairo
-#-- Cairo Requirements
-RUN apt-get update && apt-get install -y \
-    libpixman-1-dev \
-    libcairo2-dev \
-    libxt-dev && \
-    apt-get clean && rm -rf /var/lib/lists/*
 RUN R -e "install.packages(c('Cairo'),repos='$REPOS')"
 
 
