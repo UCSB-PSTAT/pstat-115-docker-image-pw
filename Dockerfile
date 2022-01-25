@@ -8,7 +8,7 @@ LABEL maintainer="Patrick Windmiller <windmiller@pstat.ucsb.edu>"
 
 USER root
 
-RUN apt update -y && apt install -yq build-essential python-dev autotools-dev libicu-dev libbz2-dev libboost-all-dev libfreetype6-dev libpixman-1-dev libcairo2-dev libxt-dev nano && apt-get clean
+RUN apt update -y && apt install -yq build-essential python-dev autotools-dev libicu-dev libbz2-dev libboost-all-dev libfreetype6-dev libpixman-1-dev libcairo2-dev libxt-dev nano && wget https://download1.rstudio.org/desktop/bionic/amd64/rstudio-2021.09.2-382-amd64.deb && apt install ./rstudio*.deb -yq && apt-get clean
 
 ## Required rstan build method to work with docker and kubernetes (Beginning)
 #-- RSTAN
@@ -63,6 +63,9 @@ RUN pip install otter-grader
 #-- Cairo
 RUN R -e "install.packages(c('Cairo'),repos='$REPOS')"
 
+RUN conda && conda clean -i
+
+RUN conda install -y -c conda-forge jupyter-rsession-proxy
 
 #-- Latex
 # RUN apt-get update && apt-get install -y \
