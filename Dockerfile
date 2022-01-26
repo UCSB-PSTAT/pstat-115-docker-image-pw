@@ -8,7 +8,7 @@ LABEL maintainer="Patrick Windmiller <windmiller@pstat.ucsb.edu>"
 
 USER root
 
-RUN apt update -y && \
+RUN apt update -y && apt upgrade -yq && \
     apt install -yq build-essential python-dev autotools-dev libicu-dev libbz2-dev libboost-all-dev libfreetype6-dev libpixman-1-dev libcairo2-dev libxt-dev nano && \
     wget https://download1.rstudio.org/desktop/bionic/amd64/rstudio-2021.09.2-382-amd64.deb && \
     wget https://download2.rstudio.org/server/bionic/amd64/rstudio-server-2021.09.2-382-amd64.deb && \
@@ -22,7 +22,7 @@ RUN R -e "install.packages(c('inline','gridExtra','loo'),repos='$REPOS')"
 #-- install rstan
 RUN R -e "dotR <- file.path(Sys.getenv('HOME'), '.R'); if(!file.exists(dotR)){ dir.create(dotR) }; Makevars <- file.path(dotR, 'Makevars'); if (!file.exists(Makevars)){  file.create(Makevars) }; cat('\nCXX14FLAGS=-O3 -fPIC -Wno-unused-variable -Wno-unused-function', 'CXX14 = g++ -std=c++1y -fPIC', file = Makevars, sep = '\n', append = TRUE)"
 RUN R -e "install.packages(c('ggplot2','StanHeaders','V8','BH'),repos='$REPOS')"
-RUN R -e "packageurl <- 'http://cran.r-project.org/src/contrib/Archive/rstan/rstan_2.21.2.tar.gz'; install.packages(packageurl, repos = NULL, type = 'source', dependencies = TRUE)"
+RUN R -e "packageurl <- 'https://cran.r-project.org/src/contrib/rstan_2.21.3.tar.gz'; install.packages(packageurl, repos = NULL, type = 'source', dependencies = TRUE)"
 #-- Docker Makevars substitute (Allows for clearing of Home directory during persistance storage build)
 ##RUN sed -i 's/CXX14 = /CXX14 = g++ -std=c++1y -fPIC/I' $R_HOME/etc/Makeconf && \
 ##    sed -i 's/CXX14FLAGS = /CXX14FLAGS = -O3 -fPIC -Wno-unused-variable -Wno-unused-function/I' $R_HOME/etc/Makeconf
@@ -69,7 +69,10 @@ RUN R -e "install.packages(c('Cairo'),repos='$REPOS')"
 
 RUN conda && conda clean -i
 
-RUN conda install -y -c conda-forge jupyter-rsession-proxy
+RUN pip install nbgitpuller && \
+    jupyter serverextension enable --py nbgitpuller --sys-prefix
+
+RUN conda install -y -c conda-forge jupyter-server-proxy jupyter-rsession-proxy
 
 #-- Latex
 # RUN apt-get update && apt-get install -y \
