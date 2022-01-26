@@ -8,7 +8,7 @@ LABEL maintainer="Patrick Windmiller <windmiller@pstat.ucsb.edu>"
 
 USER root
 
-RUN apt update -y && apt upgrade -yq \
+RUN apt update -y && apt upgrade -yq && \
     apt install -yq build-essential python-dev autotools-dev libicu-dev libbz2-dev libboost-all-dev libfreetype6-dev libpixman-1-dev libcairo2-dev libxt-dev nano && \
     wget https://download1.rstudio.org/desktop/bionic/amd64/rstudio-2021.09.2-382-amd64.deb && \
     wget https://download2.rstudio.org/server/bionic/amd64/rstudio-server-2021.09.2-382-amd64.deb && \
