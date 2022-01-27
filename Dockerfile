@@ -55,7 +55,9 @@ RUN R -e "install.packages(c('coda','projpred','MCMCpack','hflights','HDInterval
 
 RUN R -e "install.packages(c('rstantools', 'shinystan'),repos='$REPOS')"
 
-RUN R -e "install.packages(c('mvtnorm','dagitty','tidyverse','codetools'),repos='$REPOS')"
+RUN R -e "install.packages(c('mvtnorm','dagitty','tidyverse','codetools','posterior'),repos='$REPOS')"
+
+RUN R -e "install.packages('cmdstanr', repos = 'https://mc-stan.org/r-packages/')"
 
 RUN R -e "devtools::install_github('rmcelreath/rethinking', upgrade = c('never'),repos='$REPOS')"
 
