@@ -74,6 +74,8 @@ RUN conda && conda clean -i
 RUN pip install nbgitpuller && \
     jupyter serverextension enable --py nbgitpuller --sys-prefix
 
+RUN cp /opt/conda/lib/python3.9/site-packages/nbgitpuller/templates/status.html /opt/conda/lib/python3.9/site-packages/notebook/templates/status.html
+
 RUN conda install -y -c conda-forge jupyter-server-proxy jupyter-rsession-proxy
 
 #-- Latex
