@@ -10,7 +10,7 @@ pipeline {
         }
         stage('Test') {
             steps {
-                sh 'podman run -it --rm localhost/pstat115 python -e "import otter"'
+                sh 'podman run -it --rm localhost/pstat115 python -c "import otter"'
             }
         }
     }
